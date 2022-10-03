@@ -1,31 +1,33 @@
 from argparse import ArgumentParser
-from flask import Flask, request
+from flask import Flask
 from flask_pydantic import validate
-from contracts import InputModel
+from contracts import CreateTopicModel, CreateCommentModel
+from manager import Manager
 
 app = Flask(__name__)
+manager = Manager()
 
 
-@app.route('/query_hello', methods=['GET'])
+@app.route('/create_topic', methods=['POST'])
 @validate()
-def query_hello(query: InputModel):
-    return f'Hello, {query.name}!'
+def create_topic(body: CreateTopicModel):
+    return {
+        "topic_id": manager.add_topic(body.text)
+    }
 
 
-@app.route('/param_hello/<name>', methods=['GET'])
+@app.route('/create_comment', methods=['POST'])
 @validate()
-def param_hello(name: str):
-    return f'Hello, {name}!'
+def create_comment(body: CreateCommentModel):
+    return {
+        "comment_id": manager.add_comment(body.topic_id, body.text)
+    }
 
 
-@app.route('/body_hello', methods=['POST'])
+@app.route('/get_topic/<topic_id>', methods=['GET'])
 @validate()
-def body_hello(body: InputModel):
-    content_type = request.headers.get('Content-Type')
-    if content_type == 'application/json':
-        return f'Hello, {body.name}!'
-    else:
-        return 'Content-Type not supported!'
+def get_topic(topic_id: int):
+    return manager.get_comments(topic_id)
 
 
 if __name__ == '__main__':

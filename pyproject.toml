@@ -10,7 +10,12 @@ python = "^3.9"
 Flask = "^2.2.2"
 Flask-Pydantic = "^0.10.0"
 argparse = "^1.4.0"
+mock = "^4.0.3"
 
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^5.0.4"
+flake8-bugbear = "^22.9.23"
 
 [build-system]
 requires = ["poetry-core"]
