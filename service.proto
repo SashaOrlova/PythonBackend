@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message Id {
+    uint32 id = 1;
+}
+
+message Stat {
+  uint32 comments = 1;
+  uint32 symbols = 2;
+}
+
+service StatService {
+  rpc CalcStat(Id) returns (Stat);
+}

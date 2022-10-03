@@ -20,8 +20,20 @@ class Manager:
 
         return self.bd.create_comment(Comment(topic_id - 1, text))
 
-    def get_comments(self, topic_id):
+    def get_comments(self, topic_id: int):
         if topic_id > self.bd.get_topic_number():
             raise Exception("wrong topic id")
 
         return self.bd.get_comments(topic_id - 1)
+
+    def get_stat(self, topic_id: int) -> (int, int):
+        """
+        Get stat on topic comments
+        :param topic_id:
+        :return: (int, int) - (number of comments, number of symbols in comments)
+        """
+        if topic_id > self.bd.get_topic_number():
+            raise Exception("wrong topic id")
+
+        comments = self.bd.get_comments(topic_id - 1)['comments']
+        return len(comments), sum([len(x) for x in comments])

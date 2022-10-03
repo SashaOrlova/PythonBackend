@@ -3,6 +3,10 @@ from flask import Flask
 from flask_pydantic import validate
 from contracts import CreateTopicModel, CreateCommentModel
 from manager import Manager
+from builds.service_pb2 import Id, Stat
+from builds.service_pb2_grpc import StatServiceStub
+import grpc
+
 
 app = Flask(__name__)
 manager = Manager()
@@ -28,6 +32,21 @@ def create_comment(body: CreateCommentModel):
 @validate()
 def get_topic(topic_id: int):
     return manager.get_comments(topic_id)
+
+
+@app.route('/calc_stat/<topic_id>', methods=['GET'])
+@validate()
+def calc_stat(topic_id: int):
+    with grpc.insecure_channel("localhost:3000") as channel:
+        client = StatServiceStub(channel)
+        stat = client.CalcStat(Id(
+            id=topic_id
+        ))
+
+        return {
+            'comments_len': stat.comments,
+            'symbols_len': stat.symbols
+        }
 
 
 if __name__ == '__main__':
